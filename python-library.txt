@@ -1,0 +1,14 @@
+
+Stackoverflow example:
+http://stackoverflow.com/questions/34717166/how-to-list-all-apps-in-cloudfoundry-using-python
+
+Python library interface:
+http://www.exaforge.com/python-cloudfoundry-love/
+
+also
+http://stackoverflow.com/questions/34585547/how-to-use-cloudfoundry-client-python-module
+
+
+Also;
+search github for "cloudfoundry" (I've seen at least one more library
+on there)

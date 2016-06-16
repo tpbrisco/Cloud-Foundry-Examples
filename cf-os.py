@@ -14,6 +14,7 @@ if os.path.isfile(os.path.expanduser("~/.cf/config.json")):
     # use existing cached credentials
     with open(os.path.expanduser("~/.cf/config.json"), "r") as f:
         current_login = json.load(f)
+    # print json.dumps(current_login, indent=2)
     authorization = current_login['AccessToken']
     # refresh the token
     oauthTokenResponse = requests.post(
@@ -26,8 +27,9 @@ if os.path.isfile(os.path.expanduser("~/.cf/config.json")):
         print "Error in token refresh:", oauthTokenResponse.text
         sys.exit(1)
 
+    # print json.dumps(oauthTokenResponse.json(), indent=2)
     authorization = oauthTokenResponse.json()['token_type'] + ' ' + oauthTokenResponse.json()['access_token']
-    print "refreshed auth:\"" + authorization + "\""
+    # print "refreshed auth:\"" + authorization + "\""
 else:
     # use new credentials
     username = raw_input('username:')
@@ -51,7 +53,7 @@ appsResponse = requests.get('https://api.run.pivotal.io/v2/apps',
                                      'Authorization': authorization}
                             )
 # print oauthTokenResponse.json()['token_type'], oauthTokenResponse.json()['access_token']
-print json.dumps(appsResponse.json(), indent=2, separators={',',':'})
+print json.dumps(appsResponse.json(), indent=2)
 
 
 #
@@ -59,5 +61,9 @@ resources = appsResponse.json()['resources']
 for r in resources:
     route = r['entity']['route_mappings_url']
     print "Entity Route",route
-    url = requests.get(route, data = {'client_id': 'cf', 'Authorization': authorization}, auth=('cf',''))
-    json.dumps(url, indent=2, separators={':',','})
+    r = requests.get('http://api.run.pivotal.io' + route,
+                       headers={'client_id': 'cf', 'Authorization': authorization})
+    if r.ok:
+        print json.dumps(r.json(), indent=2)
+    else:
+        print "Error:",r.text

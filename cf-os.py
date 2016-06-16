@@ -52,3 +52,12 @@ appsResponse = requests.get('https://api.run.pivotal.io/v2/apps',
                             )
 # print oauthTokenResponse.json()['token_type'], oauthTokenResponse.json()['access_token']
 print json.dumps(appsResponse.json(), indent=2, separators={',',':'})
+
+
+#
+resources = appsResponse.json()['resources']
+for r in resources:
+    route = r['entity']['route_mappings_url']
+    print "Entity Route",route
+    url = requests.get(route, data = {'client_id': 'cf', 'Authorization': authorization}, auth=('cf',''))
+    json.dumps(url, indent=2, separators={':',','})

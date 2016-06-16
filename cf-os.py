@@ -15,7 +15,19 @@ if os.path.isfile(os.path.expanduser("~/.cf/config.json")):
     with open(os.path.expanduser("~/.cf/config.json"), "r") as f:
         current_login = json.load(f)
     authorization = current_login['AccessToken']
-    print "Using existing credentials:\"" + authorization + "\""
+    # refresh the token
+    oauthTokenResponse = requests.post(
+        'https://login.run.pivotal.io/oauth/token?grant_type=refresh_token&client_id=cf',
+        data={'refresh_token':  current_login['RefreshToken'],
+              'client_id': 'cf',
+              'Authorization': authorization},
+        auth=('cf', ''))
+    if not oauthTokenResponse.ok:
+        print "Error in token refresh:", oauthTokenResponse.text
+        sys.exit(1)
+
+    authorization = oauthTokenResponse.json()['token_type'] + ' ' + oauthTokenResponse.json()['access_token']
+    print "refreshed auth:\"" + authorization + "\""
 else:
     # use new credentials
     username = raw_input('username:')

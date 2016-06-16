@@ -16,6 +16,7 @@ oauthTokenResponse = requests.post(
           'password': password,
           'client_id': 'cf'},
     auth=('cf',''))
+print json.dumps(oauthTokenResponse.json(), indent=2, separators={',',':'})
 authorization = oauthTokenResponse.json()['token_type'] + ' ' + oauthTokenResponse.json()['access_token']
 
 appsResponse = requests.get('https://api.run.pivotal.io/v2/apps',

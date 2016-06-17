@@ -1,6 +1,16 @@
 #!/usr/bin/python
 #
-# stolen from
+# This is demonstration code for using Python as a client for the CF environment.
+# 
+# It lists applications running in the cloud foundry environment, and then prints
+#   out the route mappings associated with each.
+#
+# This leverages existing CF credentials (if they exist) and attempts to refresh the credentials.
+# If that fails, it reverts to requesting username/password for the CF environment.
+# 
+# It's not bug-free, and could probably be improved - but it should get anyone started.
+# 
+# inspiration / borrowed from
 # http://stackoverflow.com/questions/34717166/how-to-list-all-apps-in-cloudfoundry-using-python
 
 import os, sys
@@ -21,8 +31,6 @@ def cf_login() :
     if not oauthTokenResponse.ok:
         print "Error in authentication: ",oauthTokenResponse.json()['error_description']
         return {}
-    authorization = oauthTokenResponse.json()['token_type'] + ' ' + oauthTokenResponse.json()['access_token']
-    # print "authorization:\"" + authorization + "\""
     return oauthTokenResponse.json()
 
 # attempt to refresh an existing token - expect "refresh token"
@@ -59,7 +67,6 @@ if access_key == '':
         access_key = login_json['token_type'] + ' ' + login_json['access_token']
     else:
         print "Login failed"
-    # print "authorization:\"" + access_key + "\""
 
 if access_key == '':
     print "All access methods failed.  Cannot connect"

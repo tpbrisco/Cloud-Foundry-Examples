@@ -131,7 +131,7 @@ api.add_resource(StatsRunner, '/stats')     # actually return data
 # get username, password for tests
 username = os.getenv('username')
 password = os.getenv('password')
-if username == '' or password = '':
+if username == '' or password == '':
     print "Need to set environment variables for username and password"
     sys.exit(1)
 

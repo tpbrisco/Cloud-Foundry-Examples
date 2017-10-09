@@ -135,7 +135,7 @@ if username == '' or password == '':
     print "Need to set environment variables for username and password"
     sys.exit(1)
 
-app.debug = True
+app.debug = False
 
 if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     scheduler = BackgroundScheduler()
@@ -151,4 +151,5 @@ if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == '__main__':
-    app.run()
+    port = os.getenv("PORT", default=5000)
+    app.run(host='0.0.0.0', port=port)

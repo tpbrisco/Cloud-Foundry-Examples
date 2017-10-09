@@ -1,0 +1,7 @@
+---
+applications:
+- name: scheduled
+  memory: 512M
+  instances: 1
+  buildpack: python_buildpack
+  command: python scheduled.py

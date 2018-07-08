@@ -1,4 +1,0 @@
-Flask
-Flask-REsTful
-Flask-APScheduler
-requests

@@ -1,4 +1,31 @@
-
+#
+# cf_home - a bash function to ease connectivity to cloud foundry
+# APIs.
+#
+# If $HOME/.cf-proxy exists, it will be used for the proxy settings
+# for that CF api instance
+#
+# If you use multiple CF deployments, this allows you to define and
+# switch between those easily, avoiding constant "cf logout", "cf api",
+# and other commands associated wit CF endpoints.
+#
+# Usage:
+# "source cf_home.sh" - creates a BASH alias to manage CF api endpoints
+# cf_home -m <newname>
+#    make a new "cfhome" instance, copying proxy variables from ~/.cf-proxy
+# cf_home -c
+#    clear CF related environment variables (i.e. turn off this)
+# cf_home -l
+#    list defined CFHOME endpoints
+# cf_home -D
+#    delete a CFHOME endpoint
+# cf_home -d
+#    enable debugging
+# cf_home -h
+#    usage message
+# cf_home
+#    with no parameter, cf_home prints out config and "cf target" info
+# 
 if [[ $( basename ${#-}) = $( basename ${BASH_SOURCE} ) ]];
 then
     echo     "you want to \"source\" this script"

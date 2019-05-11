@@ -25,11 +25,26 @@
 #    usage message
 # cf_home
 #    with no parameter, cf_home prints out config and "cf target" info
-# 
+#
+#
+# This takes advantage of the cf-cli environment variables (see: "cf help -a"),
+# which is why this is a function, and not a script.
+# CF_HOME is modified to switch around environments
+# CF_PLUGIN_HOME is used to avoid multiple copies of plugins
+# CF_COLOR may be set optionally
+# CF_PROXY_CFG
+# These can be set from DEF_CF_COLOR, DEF_CF_PLUGIN_HOME,
+# DEF_CF_PROXY_CFG, or just use the default values
 if [[ $( basename ${#-}) = $( basename ${BASH_SOURCE} ) ]];
 then
     echo     "you want to \"source\" this script"
 fi
+
+# default values
+CF_COLOR=${DEF_CF_COLOR:false}
+CF_PLUGIN_HOME=${DEF_CF_PLUGIN_HOME:-$HOME/.cf/plugins}
+# where to find the "default" proxy configuration when creating a new CF_HOME
+CF_PROXY_CFG=${DEF_CF_PROXY_CFG:-$HOME/.cf/proxy.cfg}
 
 # cloud foundry specific aliases
 function cf_home () {
@@ -50,7 +65,7 @@ function cf_home () {
 	then
 	    log "clearing CFHOME"
 	    unset CF_HOME
-	    CF_PROXY=$HOME/.cf/proxy.cfg
+	    unset CF_PROXY
 	else
 	    log "setting CF_HOME to .cf-$1"
 	    export CF_HOME=$HOME/.cf-"$1"
@@ -61,7 +76,7 @@ function cf_home () {
 	    log "setting $1 proxy"
 	    . ${CF_PROXY}
 	else
-	    echo '[proxy unset]'
+	    [[ ! -z "$http_proxy" ]] && echo '[proxy unset]'
 	    unset http_proxy
 	    unset https_proxy
 	fi
@@ -135,19 +150,21 @@ function cf_home () {
     fi
     if [ $do_create == 1 ] && [ ! -d $HOME/.cf-"$1" ] ;
     then
-	mkdir $HOME/.cf-"$1"
-	if [ -f $HOME/.cf-proxy ];
+	CF_HOME=${HOME}/.cf-"$1"
+	CF_PROXY=${CF_HOME}/proxy.cfg
+	mkdir ${CF_HOME}
+	if [ -f ${CF_PROXY_CFG} ];
 	then
-	    cp $HOME/.cf-proxy $HOME/.cf-"$1"/proxy.cfg
+	    cp ${CF_PROXY_CFG} ${CF_PROXY}
 	else
-	    echo "[no default proxy specified in \$HOME/.cf_proxy]"
+	    echo "[no default proxy specified in \$CF_PROXY_CFG]"
 	fi
 	switch_cfhome "$1"
 	echo "[$1 created]"
 	return 0
     fi
-    # all flags procssed, just switch home if it exists
-    if [ ! -d $HOME/.cf-"$1" ];
+    # all flags processed, just switch home if it exists
+    if [ ! -d "${HOME}/.cf-$1" ];
     then
 	echo "[no cf_home for $1 -- perhaps you meant -m?]"
 	return 0

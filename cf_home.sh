@@ -2,7 +2,7 @@
 # cf_home - a bash function to ease connectivity to cloud foundry
 # APIs.
 #
-# If $HOME/.cf-proxy exists, it will be used for the proxy settings
+# If $CFHOME/.cf-proxy exists, it will be used for the proxy settings
 # for that CF api instance
 #
 # If you use multiple CF deployments, this allows you to define and

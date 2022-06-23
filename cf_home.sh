@@ -2,7 +2,7 @@
 # cf_home - a bash function to ease connectivity to cloud foundry
 # APIs.
 #
-# If $CFHOME/.cf-proxy exists, it will be used for the proxy settings
+# If $HOME/.cf-proxy exists, it will be used for the proxy settings
 # for that CF api instance
 #
 # If you use multiple CF deployments, this allows you to define and
@@ -41,10 +41,10 @@ then
 fi
 
 # default values
-CF_COLOR=${DEF_CF_COLOR:false}
-CF_PLUGIN_HOME=${DEF_CF_PLUGIN_HOME:-$HOME/.cf/plugins}
+export CF_COLOR=${DEF_CF_COLOR:-false}
+export CF_PLUGIN_HOME=${DEF_CF_PLUGIN_HOME:-$HOME/.cf/plugins}
 # where to find the "default" proxy configuration when creating a new CF_HOME
-CF_PROXY_CFG=${DEF_CF_PROXY_CFG:-$HOME/.cf/proxy.cfg}
+export CF_PROXY_CFG=${DEF_CF_PROXY_CFG:-$HOME/.cf/proxy.cfg}
 
 # cloud foundry specific aliases
 function cf_home () {

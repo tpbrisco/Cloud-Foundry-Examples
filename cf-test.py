@@ -3,28 +3,43 @@
 # stolen from
 # http://stackoverflow.com/questions/34717166/how-to-list-all-apps-in-cloudfoundry-using-python
 
-import os
-import sys
 import getpass
 import requests
+import os
+import sys
 import json
+import urllib3
 
-username = raw_input('username:')
+urllib3.disable_warnings()
+
+url_base = os.getenv('URL_BASE')
+if url_base is None or len(url_base) == 0:
+    print('set URL_BASE to the domain base - e.g. "run.pivotal.io"')
+    sys.exit(1)
+
+username = input('username:')
 password = getpass.getpass('password:')
-oauthTokenResponse = requests.post(
-    'https://login.run.pivotal.io/oauth/token?grant_type=password&client_id=cf',
+
+auth_endpoint = 'https://login.{}/oauth/token'.format(url_base)
+oauth_r = requests.post(
+    auth_endpoint,
     data={'username': username,
           'password': password,
+          'grant_type': 'password',
           'client_id': 'cf'},
-    auth=('cf', ''))
-print json.dumps(oauthTokenResponse.json(), indent=2, separators={',', ':'})
-authorization = oauthTokenResponse.json()['token_type'] + \
-    ' ' + oauthTokenResponse.json()['access_token']
+    auth=('cf', ''),
+    verify=False)
+print(json.dumps(oauth_r.json(), indent=2, separators={',', ':'}))
+authorization = '{} {}'.format(
+    oauth_r.json()['token_type'],
+    oauth_r.json()['access_token'])
 
-appsResponse = requests.get('https://api.run.pivotal.io/v2/apps',
-                            headers={'Accept': 'application/json',
-                                     'Content-Type': 'application/json',
-                                     'Authorization': authorization}
-                            )
-# print oauthTokenResponse.json()['token_type'], oauthTokenResponse.json()['access_token']
-print json.dumps(appsResponse.json(), indent=2, separators={',', ':'})
+api_endpoint = 'https://api.{}'.format(url_base)
+apps_r = requests.get(
+    api_endpoint + '/v2/apps',
+    headers={'Accept': 'application/json',
+             'Content-Type': 'application/json',
+             'Authorization': authorization},
+    verify=False)
+# print oauth_r.json()['token_type'], oauth_r.json()['access_token']
+print(json.dumps(apps_r.json(), indent=2, separators={',', ':'}))

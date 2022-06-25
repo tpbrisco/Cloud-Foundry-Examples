@@ -21,9 +21,11 @@ import sys
 import getpass
 import requests
 import json
-import urllib3
 
-urllib3.disable_warnings()
+should_verify = False
+if not should_verify:
+    import urllib3
+    urllib3.disable_warnings()
 
 
 # attempt a login; get username/password
@@ -38,7 +40,7 @@ def cf_login(config):
             'grant_type': 'password',
             'client_id': 'cf'},
         auth=('cf', ''),
-        verify=False)
+        verify=should_verify)
     if not oauth_r.ok:
         print("Error in authentication: ", oauth_r.json()['error_description'])
         return {}
@@ -54,7 +56,7 @@ def cf_refresh(config):
             'grant_type': 'refresh_token',
             'client_id': 'cf'},
         auth=('cf', ''),
-        verify=False)
+        verify=should_verify)
     if not oauth_r.ok:
         print("Error in token refresh:", oauth_r.json()['error_description'])
         return {}
@@ -105,8 +107,7 @@ apps_r = requests.get(
              'Content-Type': 'application/json',
              'Request-Type': 'application/json',
              'Authorization': access_key},
-    verify=False
-)
+    verify=should_verify)
 print(json.dumps(apps_r.json(), indent=2))
 
 # get their routes
@@ -120,7 +121,7 @@ for r in resources:
                  'Authorization': access_key,
                  'Request-Type': 'application/json',
                  'Content-Type': 'application/json'},
-        verify=False)
+        verify=should_verify)
     if r.ok:
         print(json.dumps(r.json(), indent=2))
     else:

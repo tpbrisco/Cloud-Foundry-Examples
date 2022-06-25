@@ -8,9 +8,11 @@ import requests
 import os
 import sys
 import json
-import urllib3
 
-urllib3.disable_warnings()
+should_verify = False
+if not should_verify:
+    import urllib3
+    urllib3.disable_warnings()
 
 url_base = os.getenv('URL_BASE')
 if url_base is None or len(url_base) == 0:
@@ -28,7 +30,7 @@ oauth_r = requests.post(
           'grant_type': 'password',
           'client_id': 'cf'},
     auth=('cf', ''),
-    verify=False)
+    verify=should_verify)
 print(json.dumps(oauth_r.json(), indent=2, separators={',', ':'}))
 authorization = '{} {}'.format(
     oauth_r.json()['token_type'],
@@ -40,6 +42,6 @@ apps_r = requests.get(
     headers={'Accept': 'application/json',
              'Content-Type': 'application/json',
              'Authorization': authorization},
-    verify=False)
+    verify=should_verify)
 # print oauth_r.json()['token_type'], oauth_r.json()['access_token']
 print(json.dumps(apps_r.json(), indent=2, separators={',', ':'}))
